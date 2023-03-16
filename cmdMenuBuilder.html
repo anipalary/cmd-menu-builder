@@ -1,0 +1,111 @@
+<form id="data">
+	<div id="form">
+		<textarea name="option" placeholder="option">select</textarea>
+		<textarea name="script" placeholder="script">echo you look good today</textarea>
+		<br>
+		<textarea name="option" placeholder="option">something</textarea>
+		<textarea name="script" placeholder="script">echo be a nice person</textarea>
+		<br>
+	</div>
+	<label style="cursor: pointer"><input type="checkbox" id="clr" value="false"> colorous menu(win10+)</label><br>
+	<input type="button" onclick="add()" value="add">
+	<input type="button" onclick="minus()" value="minus 1">
+	<input type="button" onclick="build()" value="build">
+	(copying to clipboard automaticly)
+</form>
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 100%; background-color: #00000080; display: none;" id="black">
+	<input type="button" onclick='document.getElementById("black").style.display = "none";document.getElementById("output").innerHTML = ""' value="hide" style="position: absolute; left: 30%; top: 10%; background-color: white; padding: 10px">
+	<input type="button" onclick='download("cmdMenu.bat", code())' value="download" style="position: absolute; right: 30%; top: 10%; background-color: white; padding: 10px">
+	<div style="position: absolute; left: 30%; right: 30%; top: 20%; background-color: white; border-radius: 20px; padding: 20px;" id="output"></div>
+</div>
+<script>
+	function add(){
+		let options = document.getElementsByName("option");
+		let scripts = document.getElementsByName("script");
+		
+		for(let i = 0; i < options.length; i++){
+			options[i].innerHTML = options[i].value;
+			scripts[i].innerHTML = scripts[i].value;
+		}
+		
+		let form = document.getElementById("form");
+		form.innerHTML += '<textarea name="option" placeholder="option"></textarea>\n';
+		form.innerHTML += '<textarea name="script" placeholder="script"></textarea>\n';
+		form.innerHTML += '<br>';
+	}
+	function minus(){
+		let options = document.getElementsByName("option");
+		let scripts = document.getElementsByName("script");
+		
+		options[options.length-1].remove();
+		scripts[scripts.length-1].remove();
+	}
+	function build(){
+		const data = document.getElementById("data");
+		const formData = new FormData(data);
+		let out = document.getElementById("output");
+		
+		let options = formData.getAll("option");
+		let scripts = formData.getAll("script");
+		
+		out.innerHTML += "@echo off<br><br>"
+		
+		for(let i = 0; i < options.length; i++){
+			out.innerHTML += ":"+i+"<br>";
+			out.innerHTML += "cls<br>";
+			out.innerHTML += "echo W/S to move up and down, D to choose<br>";
+			out.innerHTML += "echo.<br>";
+			
+			for(let j = 0; j < options.length; j++){
+				if(i==j)
+					if(document.getElementById("clr").checked)
+						out.innerHTML += "<pre>echo [101;93m "+options[j]+" [0m</pre><br><br>";
+					else
+						out.innerHTML += "<pre>echo -"+options[j]+"-</pre><br><br>";
+				else
+					out.innerHTML += "<pre>echo  "+options[j]+"</pre><br><br>";
+			}
+			
+			out.innerHTML += "choice /c wsd /n<br><br>";
+			
+			out.innerHTML += "if %errorlevel%==1 goto ";
+			if(i==0)
+				out.innerHTML += (options.length-1)+"<br>";
+			else
+				out.innerHTML += i-1+"<br>";
+			
+			out.innerHTML += "if %errorlevel%==2 goto ";
+			if(i==options.length-1)
+				out.innerHTML += "0<br><br>";
+			else
+				out.innerHTML += (i+1)+"<br><br>";
+			
+			out.innerHTML += "if %errorlevel%==3 goto script"+i+"<br><br>";
+		}
+		
+		for(let i = 0; i < scripts.length; i++){
+			out.innerHTML += ":script"+i+"<br><br>";
+			out.innerHTML += scripts[i].replaceAll("\n", "<br>")+"<br><br>";
+			out.innerHTML += "pause<br>";
+			out.innerHTML += "exit<br><br>";
+		}
+		
+		document.getElementById("black").style.display = "block";
+		navigator.clipboard.writeText(code());
+	}
+	function code(){
+		return document.getElementById("output").innerHTML.replaceAll("<br>", "\n").replaceAll("<pre>", "").replaceAll("</pre>", "");
+	}
+	function download(filename, text) {
+	  var element = document.createElement('a');
+	  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+	  element.setAttribute('download', filename);
+
+	  element.style.display = 'none';
+	  document.body.appendChild(element);
+
+	  element.click();
+
+	  document.body.removeChild(element);
+	}
+</script>
