@@ -10,3 +10,5 @@ use batch couse it can be execute on any windows machine.
 JS for the same reason. Executable on any device with browser
 
 ![Безымянный](https://user-images.githubusercontent.com/60285472/225635252-26850b91-ed8f-4691-a8ce-144d24bf50b8.png)
+
+here it is: http://htmlpreview.github.io/?https://github.com/anipalary/cmd-menu-builder/blob/main/cmdMenuBuilder.html
