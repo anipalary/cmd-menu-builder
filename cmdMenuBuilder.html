@@ -95,7 +95,8 @@
 		navigator.clipboard.writeText(code());
 	}
 	function code(){
-		return document.getElementById("output").innerHTML.replaceAll("<br>", "\n").replaceAll("<pre>", "").replaceAll("</pre>", "");
+		return document.getElementById("output").innerHTML.replaceAll("<br>", "\n").replaceAll("<pre>", "").replaceAll("</pre>", "")
+			.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#x60;", "`");
 	}
 	function download(filename, text) {
 	  var element = document.createElement('a');
