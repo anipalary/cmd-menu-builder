@@ -12,11 +12,45 @@
 	<input type="button" onclick="minus()" value="minus 1">
 	<input type="button" onclick="build()" value="build">
 </form>
-<div style="position: absolute; left: 0; right: 0; top: 0; height: 100%; background-color: #00000080; display: none;" id="black">
-	<input type="button" onclick='document.getElementById("black").style.display = "none";document.getElementById("output").innerHTML = ""' value="hide" style="position: absolute; left: 30%; top: 10%; background-color: white; padding: 10px">
-	<input type="button" onclick='download("cmdMenu.bat", code())' value="download" style="position: absolute; right: 30%; top: 10%; background-color: white; padding: 10px">
-	<div style="position: absolute; left: 30%; right: 30%; top: 20%; background-color: white; border-radius: 20px; padding: 20px;" id="output"></div>
+<div id="black">
+	<input type="button" value="hide" onclick='document.getElementById("black").style.display = "none";document.getElementById("output").innerHTML = ""'>
+	<input type="button" value="download" onclick='download("cmdMenu.bat", code())'>
+	<div id="output"></div>
 </div>
+<style>
+	#black{
+		position: absolute; 
+		left: 0; 
+		right: 0; 
+		top: 0; 
+		height: 100%; 
+		background-color: #00000080; 
+		display: none;
+	}
+	#output{
+		position: absolute; 
+		left: 30%; 
+		right: 30%; 
+		top: 20%; 
+		background-color: white; 
+		border-radius: 20px; 
+		padding: 20px;
+	}
+	input[value=hide]{
+		position: absolute; 
+		left: 30%; 
+		top: 10%; 
+		background-color: white; 
+		padding: 10px
+	}
+	input[value=download]{
+		position: absolute; 
+		right: 30%; 
+		top: 10%; 
+		background-color: white; 
+		padding: 10px
+	}
+</style>
 <script>
 	function add(){
 		let options = document.getElementsByName("option");
@@ -59,11 +93,11 @@
 			for(let j = 0; j < options.length; j++){
 				if(i==j)
 					if(document.getElementById("clr").checked)
-						out.innerHTML += "<pre>echo [101;93m "+options[j]+" [0m</pre><br><br>";
+						out.innerHTML += "<pre>echo [101;93m "+protect(options[j])+" [0m</pre><br><br>";
 					else
-						out.innerHTML += "<pre>echo -"+options[j]+"-</pre><br><br>";
+						out.innerHTML += "<pre>echo -"+protect(options[j])+"-</pre><br><br>";
 				else
-					out.innerHTML += "<pre>echo  "+options[j]+"</pre><br><br>";
+					out.innerHTML += "<pre>echo  "+protect(options[j])+"</pre><br><br>";
 			}
 			
 			out.innerHTML += "choice /c wsd /n<br><br>";
@@ -85,17 +119,16 @@
 		
 		for(let i = 0; i < scripts.length; i++){
 			out.innerHTML += ":script"+i+"<br><br>";
-			out.innerHTML += scripts[i].replaceAll("\n", "<br>")+"<br><br>";
+			out.innerHTML += protect(scripts[i]).replaceAll("\n", "<br>")+"<br><br>";
 			out.innerHTML += "pause<br>";
 			out.innerHTML += "exit<br><br>";
 		}
 		
 		document.getElementById("black").style.display = "block";
-		copyTextToClipboard(code());
+		navigator.clipboard.writeText(code());
 	}
 	function code(){
-		return document.getElementById("output").innerHTML.replaceAll("<br>", "\n").replaceAll("<pre>", "").replaceAll("</pre>", "")
-			.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#x60;", "`");
+		return unprotect(document.getElementById("output").innerHTML.replaceAll("<br>", "\n").replaceAll("<pre>", "").replaceAll("</pre>", ""));
 	}
 	function download(filename, text) {
 	  var element = document.createElement('a');
@@ -109,15 +142,10 @@
 
 	  document.body.removeChild(element);
 	}
-	function copyTextToClipboard(text) {
-	  if (!navigator.clipboard) {
-	    fallbackCopyTextToClipboard(text);
-	    return;
-	  }
-	  navigator.clipboard.writeText(text).then(function() {
-	    console.log('Async: Copying to clipboard was successful!');
-	  }, function(err) {
-	    console.error('Async: Could not copy text: ', err);
-	  });
+	function protect(str){
+		return str.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\"", "&quot;").replace("`", "&#x60;");
+	}
+	function unprotect(str){
+		return str.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">").replace("&quot;", "\"").replace("&#x60;", "`");
 	}
 </script>
